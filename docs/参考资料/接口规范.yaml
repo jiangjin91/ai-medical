@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: Patient Medical Service Assistant API
+  version: 0.1.0
+  description: 患者端医疗服务助手接口草案，用于前后端联调前统一契约。
+servers:
+  - url: /api
+paths:
+  /patient/tasks:
+    get:
+      summary: 查询患者当前待办
+      description: 返回患者首页需要展示的预约、检查、报告、缴费、转接等任务。
+      responses:
+        "200":
+          description: 查询成功
+  /assistant/chat:
+    post:
+      summary: 发送患者咨询消息
+      description: 提交患者输入，由 AI 服务返回回复、任务卡或转人工指引。
+      responses:
+        "200":
+          description: 处理成功
+  /handoff:
+    post:
+      summary: 发起人工转接
+      description: 将当前会话脱敏摘要转给合适的人工队列。
+      responses:
+        "200":
+          description: 转接成功

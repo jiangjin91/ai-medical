@@ -1,0 +1,24 @@
+# 本文件由 pre-commit 读取。安装 Hook 后，每次 git commit 都会执行以下检查。
+default_stages: [pre-commit]
+
+repos:
+  # 使用本地命令，复用项目已有的 uv 环境和根目录 .pylintrc 规则。
+  - repo: local
+    hooks:
+      - id: pylint-ai-service
+        name: Pylint（ai-service）
+        entry: uv run --directory ai-service pylint --rcfile ../.pylintrc atguigu
+        language: system
+        pass_filenames: false
+        # 仅当本次提交包含 AI 服务 Python 文件或公共 Pylint / Hook 配置时才运行。
+        # 修改公共规则时需要复查两个服务，避免其中一方因配置变化失效。
+        files: ^(ai-service/.*\.py|\.pylintrc|\.pre-commit-config\.yaml)$
+
+      - id: pylint-backend-service
+        name: Pylint（backend-service）
+        entry: uv run --directory backend-service --with pylint pylint --rcfile ../.pylintrc app
+        language: system
+        pass_filenames: false
+        # 仅当本次提交包含业务服务 Python 文件或公共 Pylint / Hook 配置时才运行。
+        # backend-service 未声明 Pylint 依赖，因此命令仍以临时依赖方式执行。
+        files: ^(backend-service/.*\.py|\.pylintrc|\.pre-commit-config\.yaml)$

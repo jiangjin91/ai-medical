@@ -1,0 +1,143 @@
+[MAIN]
+# 通用 Pylint 配置：适用于当前项目的 ai-service 与 backend-service 两个 Python 子项目。
+# 目标是先发现明显错误和高价值问题，同时降低 FastAPI / Pydantic / SQLAlchemy 项目的常见误报。
+
+# 以 Python 3.12 的语法和标准库规则进行检查；与 ai-service 的运行版本保持一致。
+py-version=3.12
+# 递归检查传入目录下的 Python 文件，避免只检查入口文件。
+recursive=yes
+# 自动使用可用 CPU 核心并行检查；0 表示由 Pylint 自行决定并发数。
+jobs=0
+# 缓存上次检查结果，加快重复执行；缓存仅影响速度，不改变告警结论。
+persistent=yes
+# Pylint 4.0 已移除 suggestion-mode 参数；不配置该项，避免产生配置解析错误。
+
+# 从项目根目录或子项目目录运行 Pylint 时，把两个 Python 子项目加入导入路径。
+# 这样可避免本地包导入被误报为 `import-error`；若项目目录结构变化，需要同步调整这里。
+init-hook=import sys; from pathlib import Path; cwd = Path.cwd(); root = cwd if (cwd / "ai-service").exists() else cwd.parent; sys.path.insert(0, str(root / "ai-service")); sys.path.insert(0, str(root / "backend-service"))
+
+# 排除虚拟环境、前端依赖、构建产物、IDE 元数据和可视化临时内容，减少无效扫描。
+ignore=.venv,venv,node_modules,dist,build,__pycache__,.idea,.superpowers
+# 排除 Protobuf 自动生成文件；这类文件通常不由项目成员手工维护。
+ignore-patterns=.*_pb2.py,.*_pb2_grpc.py
+
+[MESSAGES CONTROL]
+# 以下告警在当前项目中关闭：保留质量检查，但避免框架代码和渐进式重构产生过多噪音。
+disable=
+    # 文档要求由接口文档与中文业务文档承担，不强制每个模块、类、函数都写 docstring。
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    # Pydantic / SQLAlchemy 模型常为数据载体，公共方法较少属于正常情况。
+    too-few-public-methods,
+    # 业务接口参数和局部变量较多时先提示人工评审，不在静态检查阶段阻断。
+    too-many-arguments,
+    too-many-positional-arguments,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    # 相似流程和待办标记可在重构计划中统一处理，不作为当前阻断项。
+    duplicate-code,
+    fixme,
+    # Web 服务入口需要兜底异常处理；具体异常范围仍应在代码评审中关注。
+    broad-exception-caught
+
+[FORMAT]
+# 单行最大长度；兼顾中文注释、URL、类型注解的可读性。
+max-line-length=120
+# 单个模块超过该行数才会告警，避免超大文件长期失控。
+max-module-lines=1000
+
+[BASIC]
+# 以下规则约束命名风格。允许 i/j/k、db、id 等常用短名称，其余名称优先使用小写下划线。
+good-names=i,j,k,ex,_,db,pk,id
+# 函数参数：小写字母或下划线开头，仅可包含小写字母、数字、下划线，最长 40 个字符。
+argument-rgx=[a-z_][a-z0-9_]{1,40}$
+# 实例属性：遵循与参数相同的 snake_case 规范。
+attr-rgx=[a-z_][a-z0-9_]{1,40}$
+# 类名：使用 PascalCase，例如 PatientTaskService。
+class-rgx=[A-Z_][a-zA-Z0-9]+$
+# 常量：使用全大写下划线，例如 MAX_RETRY_COUNT；同时允许 Python 特殊双下划线名称。
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+# 函数和方法：使用 snake_case，函数名最长 50 个字符。
+function-rgx=[a-z_][a-z0-9_]{1,50}$
+method-rgx=[a-z_][a-z0-9_]{1,50}$
+# 模块：使用小写 snake_case；保留 __init__ 作为包入口的例外。
+module-rgx=(([a-z_][a-z0-9_]*)|(__init__))$
+# 普通变量：使用 snake_case，最长 40 个字符。
+variable-rgx=[a-z_][a-z0-9_]{1,40}$
+
+[TYPECHECK]
+# 动态框架容易让 Pylint 误判成员不存在，这里只对常见框架做有限放宽。
+# Pydantic、配置模型和 SQLAlchemy 会在运行时生成部分属性，避免误报 no-member。
+generated-members=
+    pydantic.*,
+    pydantic_settings.*,
+    sqlalchemy.*
+
+# 这些模块内部依赖动态实现，不对其进行静态成员推断。
+ignored-modules=
+    pydantic,
+    pydantic_settings
+
+[DESIGN]
+# 复杂度阈值：超出时 Pylint 给出设计告警，提醒拆分职责；其中部分告警已在上方关闭。
+# 这些值仍保留在配置中，便于后续恢复严格检查时直接生效。
+# 单个函数允许的参数数量，适配 FastAPI 的依赖注入和请求模型场景。
+max-args=8
+# 单个类允许的实例属性数量，超过时建议拆分模型或职责。
+max-attributes=12
+# 布尔表达式的最大复杂度，避免难以阅读的条件判断。
+max-bool-expr=5
+# 单个函数可包含的分支数。
+max-branches=15
+# 单个函数可定义的局部变量数。
+max-locals=20
+# 类的最大继承层级。
+max-parents=7
+# 单个类允许的公共方法数量。
+max-public-methods=25
+# 单个函数允许的 return 分支数量。
+max-returns=8
+# 单个函数允许的语句数量。
+max-statements=60
+
+[IMPORTS]
+# 声明常用第三方包，帮助 Pylint 区分本地模块、标准库与第三方依赖的导入分组。
+known-third-party=
+    fastapi,
+    httpx,
+    jinja2,
+    langchain,
+    pydantic,
+    pydantic_settings,
+    pymysql,
+    sqlalchemy,
+    uvicorn,
+    yaml
+
+[LOGGING]
+# 统一使用 str.format 风格的惰性日志占位符，例如 logger.info("患者 %s", patient_id)。
+logging-format-style=new
+
+[SIMILARITIES]
+# 重复代码检查时忽略注释、文档字符串和 import，聚焦真实业务逻辑的重复。
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
+# 连续 8 行以上相似代码才触发提示，降低短小样板代码造成的误报。
+min-similarity-lines=8
+
+[VARIABLES]
+# 以下划线开头的参数（例如 _request）视为有意未使用，不产生 unused-argument 告警。
+ignored-argument-names=_.*
+# 不要求 __init__.py 显式导入包内所有子模块，避免不必要的循环导入。
+init-import=no
+
+[REPORTS]
+# 不输出传统汇总报表，终端只保留逐条告警和最终评分，便于 CI 阅读。
+reports=no
+# 输出本次检查评分。
+score=yes
+# 当评分低于 7.0 时返回非零退出码，可作为 CI 的最低质量门槛。
+fail-under=7.0

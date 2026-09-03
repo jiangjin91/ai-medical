@@ -1,0 +1,73 @@
+<h2>患者端：从“聊天客服”变成“就医任务助手”</h2>
+<p class="subtitle">推荐以一次就医旅程为主线：让患者知道下一步、少重复输入、遇到异常能立刻找到人。</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">推荐的大体框架</div>
+    <div class="mockup-body">
+      <div style="display:flex;gap:12px;align-items:stretch;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px;padding:16px;border:1px solid #d9e5e1;border-radius:12px;background:#f4fbf8">
+          <div class="label">患者入口</div>
+          <h3>微信小程序 / 医院 App / H5</h3>
+          <p>任务卡优先，聊天辅助；默认展示当前待办而非空白对话框。</p>
+        </div>
+        <div style="align-self:center;font-size:26px;color:#2c8f78">→</div>
+        <div style="flex:1;min-width:200px;padding:16px;border:1px solid #d9e5e1;border-radius:12px;background:#f4fbf8">
+          <div class="label">任务编排</div>
+          <h3>流程状态 + 医疗系统数据</h3>
+          <p>预约、检查、报告、复诊、随访形成一个连续任务，而非彼此孤立的查询。</p>
+        </div>
+        <div style="align-self:center;font-size:26px;color:#2c8f78">→</div>
+        <div style="flex:1;min-width:200px;padding:16px;border:1px solid #d9e5e1;border-radius:12px;background:#f4fbf8">
+          <div class="label">安全兜底</div>
+          <h3>人工接管 + 异常升级</h3>
+          <p>投诉、急症关键词、身份异常和系统失败，明确转人工并保留上下文。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">全旅程应用场景</div>
+  <div class="cards">
+    <div class="card" data-choice="pre-visit" onclick="toggleSelect(this)">
+      <div class="card-body">
+        <h3>① 诊前：选对服务、少跑一趟</h3>
+        <p><strong>场景：</strong>科室/医生选择、预约与改约、费用与材料、检查准备、院内导航。</p>
+        <p><strong>体验重点：</strong>用“我要做什么”取代专业名词和层层菜单。</p>
+      </div>
+    </div>
+    <div class="card selected" data-choice="exam-loop" onclick="toggleSelect(this)">
+      <div class="card-body">
+        <h3>② 诊中：检查检验闭环 <span style="color:#23836d">推荐首发</span></h3>
+        <p><strong>场景：</strong>检查预约、注意事项、排队/进度、报告状态、异常结果人工提示、复诊引导。</p>
+        <p><strong>体验重点：</strong>每一步自动推送下一步，避免患者反复问“结果什么时候出”。</p>
+      </div>
+    </div>
+    <div class="card" data-choice="post-visit" onclick="toggleSelect(this)">
+      <div class="card-body">
+        <h3>③ 诊后：把一次就诊变成连续服务</h3>
+        <p><strong>场景：</strong>复诊提醒、用药与康复宣教、慢病随访、药品配送进度、问题上报。</p>
+        <p><strong>体验重点：</strong>仅提供已审核的知识内容，出现风险信号立即升级人工。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">患者看到的首页，不应是“请输入你的问题”</div>
+    <div class="mockup-body">
+      <h3 style="margin-top:0">王女士，下午好</h3>
+      <p class="subtitle">你有 2 件需要处理的事</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="mock-button">明日 09:30 · CT 检查<br><small>查看准备事项</small></button>
+        <button class="mock-button">血常规报告已出<br><small>查看报告与复诊建议</small></button>
+        <button class="mock-button">需要帮助？<br><small>问助手 / 转人工</small></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">请点击你认为最值得首发的场景卡；也可以直接告诉我哪一段患者旅程最值得解决。</p>
